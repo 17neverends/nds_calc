@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расчет накладной</title>
+    <link rel="stylesheet" href="/static/templates_nds/style.css">
+</head>
+<body> 
+    <form>
+        <h1>Общая информация</h1>
+
+
+        <label>Доп. сбор за доставку с получателя, в т.ч. НДС</label>
+        <input type="text" id="amount" name="amount" placeholder="Введите сумму">
+
+
+        <label>Ставка/Сумма НДС за доп. сбор с получателя (включается когда введен доп. сбор)</label>
+
+        <div class="nds-flex">
+            <div class="droprow">
+                <input type="text" id="combobox_value" onclick="showDropdown('ndsList')" placeholder="НДС" readonly>
+                <ul id="ndsList" class="dropdown-list">
+                    <li value="without" data-id="without" class="option" onclick="selectRole('without', 'Нет НДС','combobox_value', 'ndsList')">Нет НДС</li>
+                    <li value="zero" data-id="zero" class="option" onclick="selectRole('zero', '0%','combobox_value', 'ndsList')">0%</li>
+                    <li value="ten" data-id="ten" class="option" onclick="selectRole('ten', '10%','combobox_value', 'ndsList')">10%</li>
+                    <li value="twenty" data-id="twenty" class="option" onclick="selectRole('twenty', '20%','combobox_value', 'ndsList')">20%</li>
+                </ul>
+            </div>
+
+            <p class="separator">/</p>
+
+            <input type="text" id="calculation" name="calculation" placeholder="Подсчет">
+        </div>
+
+        <div class="all_places">
+
+        </div>
+        <label class="status" id="status"></label>
+
+        <button type="button" id="confirm" onclick="check_inputs()">Принять</button>
+    </form>
+    <script src="/static/templates_nds/main.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>  
+</body>
+</html>
