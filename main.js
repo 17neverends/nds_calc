@@ -1,4 +1,5 @@
 const status_text = document.getElementById('status');
+
 function showDropdown(inputID) {
   var dropdown = document.getElementById(inputID);
   if (dropdown) {
@@ -14,14 +15,38 @@ function hideDropdown(inputID) {
 }
 
 
-function selectRole(value, label, ID, inputID) {
-  var input = document.getElementById(ID);
-  input.value = label;
-  hideDropdown(inputID);
-
+function selectRole(value, text, inputId, listId, getID, whereID) {
+  var input = document.getElementById(inputId);
+  var list = document.getElementById(listId);
+  input.value = text;
+  console.log(text);
+  if (value === 'without' || value === 'zero') {
+      document.getElementById(whereID).value = '0';
+  } else {
+      var amount = parseFloat(document.getElementById(`${getID}`).value);
+      var ndsRate = parseFloat(text);
+      calculateTotal(amount, ndsRate, whereID);
+  }
+  list.style.display = 'none';
 }
 
-let storageValue = 3;
+function calculateTotal(amount, ndsRate, whereID) {
+  let prod;
+  var calculationInput = document.getElementById(whereID);
+
+  if (ndsRate == '10'){
+    prod = 9.090909
+  } else if (ndsRate == '20'){
+    prod = 16.666667
+  } 
+
+  var total = amount * prod / 100;
+  calculationInput.value = total.toFixed(2);
+}
+
+
+
+let storageValue = 2;
 
 let HashMap = {};
 
@@ -41,9 +66,9 @@ function showPlacesOnload() {
           <div class="places-container" id="places-container${i+1}">
           <p class="place_title"> Место ${i+1}</p>
           <div class="places" id="place${i+1}_${current}">
-              <p>Товар 1</p>
+              <p class="items">Товар 1</p>
               <label>Код артикула</label>
-              <input class="code" type="text" id="code${i+1}_${current}" name="code" placeholder="Введите артикул">
+              <input class="code" type="number" id="code${i+1}_${current}" name="code" placeholder="Введите артикул">
               <label>Наименование товара</label>
               <input class="title" type="text" id="title${i+1}_${current}" name="title" value="ТНП" placeholder="Введите товар">
               <label>Стоимость ед. товара в ₽</label>
@@ -68,10 +93,10 @@ function showPlacesOnload() {
                       <label>Ставка НДС, %</label>
                       <input type="text" class="place_combobox_value" id="place_combobox_value${i+1}_${current}" onclick="showDropdown('place_ndsList${i+1}_${current}')" placeholder="НДС" readonly>
                       <ul id="place_ndsList${i+1}_${current}" class="dropdown-list">
-                          <li value="without" data-id="without" class="option" onclick="selectRole('without', 'Нет НДС','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}')">Нет НДС</li>
-                          <li value="zero" data-id="zero" class="option" onclick="selectRole('zero', '0%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}')">0%</li>
-                          <li value="ten" data-id="ten" class="option" onclick="selectRole('ten', '10%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}')">10%</li>
-                          <li value="twenty" data-id="twenty" class="option" onclick="selectRole('twenty', '20%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}')">20%</li>
+                          <li value="without" data-id="without" class="option" onclick="selectRole('without', 'Нет НДС','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}','cost${i+1}_${current}','nds_cost${i+1}_${current}')">Нет НДС</li>
+                          <li value="zero" data-id="zero" class="option" onclick="selectRole('zero', '0%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}','cost${i+1}_${current}','nds_cost${i+1}_${current}')">0%</li>
+                          <li value="ten" data-id="ten" class="option" onclick="selectRole('ten', '10%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}','cost${i+1}_${current}','nds_cost${i+1}_${current}')">10%</li>
+                          <li value="twenty" data-id="twenty" class="option" onclick="selectRole('twenty', '20%','place_combobox_value${i+1}_${current}', 'place_ndsList${i+1}_${current}','cost${i+1}_${current}','nds_cost${i+1}_${current}')">20%</li>
                       </ul>
                   </div>
 
@@ -84,6 +109,7 @@ function showPlacesOnload() {
       </div>
       <button class="created" type="button" id="add" onclick="addNumber(${i+1})" >+ Добавить товар</button>`
     document.querySelector('.all_places').appendChild(newPlace);
+    
   }
 }
 
@@ -93,11 +119,12 @@ function addNumber(id) {
   let counter = HashMap[id]+1;
   const newPlace = document.createElement('div');
   newPlace.classList.add('places');
-  newPlace.id = `place${id}_${counter}`; 
+  newPlace.id = `place${id}_${counter}`;
+
   newPlace.innerHTML = `
-      <p>Товар ${counter}</p>
+      <p class="items">Товар ${counter}</p>
       <label>Код артикула</label>
-      <input class="code" type="text" id="code${id}_${counter}" name="code" placeholder="Введите артикул">
+      <input class="code" type="number" id="code${id}_${counter}" name="code" placeholder="Введите артикул">
       <label>Наименование товара</label>
       <input class="title" type="text" id="title${id}_${counter}" name="title" value="ТНП" placeholder="Введите товар">
       <label>Стоимость ед. товара в ₽</label>
@@ -121,10 +148,10 @@ function addNumber(id) {
               <label>Ставка НДС, %</label>
               <input type="text" class="place_combobox_value" id="place_combobox_value${id}_${counter}" onclick="showDropdown('place_ndsList${id}_${counter}')" placeholder="НДС" readonly>
               <ul id="place_ndsList${id}_${counter}" class="dropdown-list">
-                  <li value="without" data-id="without" class="option" onclick="selectRole('without', 'Нет НДС','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}')">Нет НДС</li>
-                  <li value="zero" data-id="zero" class="option" onclick="selectRole('zero', '0%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}')">0%</li>
-                  <li value="ten" data-id="ten" class="option" onclick="selectRole('ten', '10%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}')">10%</li>
-                  <li value="twenty" data-id="twenty" class="option" onclick="selectRole('twenty', '20%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}')">20%</li>
+                  <li value="without" data-id="without" class="option" onclick="selectRole('without', 'Нет НДС','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}', 'cost${id}_${counter}', 'nds_cost${id}_${counter}')">Нет НДС</li>
+                  <li value="zero" data-id="zero" class="option" onclick="selectRole('zero', '0%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}', 'cost${id}_${counter}', 'nds_cost${id}_${counter}')">0%</li>
+                  <li value="ten" data-id="ten" class="option" onclick="selectRole('ten', '10%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}', 'cost${id}_${counter}', 'nds_cost${id}_${counter}')">10%</li>
+                  <li value="twenty" data-id="twenty" class="option" onclick="selectRole('twenty', '20%','place_combobox_value${id}_${counter}', 'place_ndsList${id}_${counter}', 'cost${id}_${counter}', 'nds_cost${id}_${counter}')">20%</li>
               </ul>
           </div>
 
@@ -133,50 +160,88 @@ function addNumber(id) {
               <input type="text" class="nds_cost" id="nds_cost${id}_${counter}" name="nds_cost" placeholder="Подсчет">
           </div>
       </div>
-      <button class="created" id="for_delete" type="button" onclick="removePlace('${newPlace.id}', '${counter}')">Удалить</button>
+      <button class="created" id="for_delete" type="button" onclick="removePlace('${newPlace.id}')">Удалить</button>
   `;
-  console.log(newPlace.id);
   document.getElementById(`places-container${id}`).appendChild(newPlace);
-  console.log(counter);
   HashMap[id]++;
 }
 
 
-function removePlace(placeId, id) {
+function removePlace(placeId) {
   const placeToRemove = document.getElementById(placeId);
+  if (!placeToRemove) return;
+
+  const parentId = placeToRemove.parentElement.id;
+  const parentIdNum = parentId.match(/\d+/)[0];
+
   placeToRemove.remove();
 
+  const places = document.querySelectorAll(`#${parentId} .places`);
+  places.forEach((place, index) => {
+    const counter = index + 1;
+    place.id = `place${parentIdNum}_${counter}`;
+    place.querySelector('p').textContent = `Товар ${counter}`;
+    place.querySelectorAll('input').forEach(input => {
+      const inputIdArray = input.id.split('_');
+      inputIdArray[inputIdArray.length - 1] = counter;
+      input.id = inputIdArray.join('_');
+    });
+
+    const leftInputPlace = place.querySelector('.left_input_place');
+    if (leftInputPlace) {
+      leftInputPlace.id = `left_input_place${parentIdNum}_${counter}`;
+      const inputInsideLeftInputPlace = leftInputPlace.querySelector('input');
+      if (inputInsideLeftInputPlace) {
+        inputInsideLeftInputPlace.id = `place_combobox_value${parentIdNum}_${counter}`;
+        inputInsideLeftInputPlace.setAttribute('onclick', `showDropdown('place_ndsList${parentIdNum}_${counter}')`);
+      }
+      const dropdownList = leftInputPlace.querySelector('.dropdown-list');
+      if (dropdownList) {
+        dropdownList.id = `place_ndsList${parentIdNum}_${counter}`;
+        dropdownList.querySelectorAll('li').forEach((li, idx) => {
+          const idNum = parentIdNum + '_' + counter;
+          li.setAttribute('onclick', `selectRole('${li.dataset.id}', '${li.textContent}', 'place_combobox_value${idNum}', 'place_ndsList${idNum}', 'cost${idNum}', 'nds_cost${idNum}')`);
+        });
+      }
+    }
+    const button = place.querySelector('button');
+    if (button) {
+      const currentPlaceId = place.id;
+      button.setAttribute('onclick', `removePlace('${currentPlaceId}')`);
+    }
+  });
 }
 
 
 
 
-// function removePlace(placeId, id) {
-//   let counter = HashMap[id]+1;
-//   const placeToRemove = document.getElementById(placeId);
-//   placeToRemove.remove();
 
-//   const places = document.getElementsByClassName('places');
-//   for (let i = 0; i < places.length; i++) {
-//     const currentPlace = places[i];
-//     const newPlaceCounter = i + 1;
 
-//     currentPlace.id = `place_${newPlaceCounter}`;
-//     currentPlace.querySelector('p').innerText = `Товар ${newPlaceCounter}`;
 
-//     currentPlace.querySelectorAll('[id^="code"], [id^="title"], [id^="place_cost"], [id^="left_input"], [id^="weight"], [id^="count"], [id^="cost"], [id^="left_input_place"], [id^="place_combobox_value"], [id^="place_ndsList"], [id^="place_combobox_value"], [id^="nds_cost"]').forEach(element => {
-//       const currentElementId = element.id;
-//       element.id = currentElementId.replace(/\d+$/, newPlaceCounter);
-//     });
 
-//     const deleteButton = currentPlace.querySelector('button');
-//     if (deleteButton) {
-//       deleteButton.setAttribute('onclick', `removePlace('place_${newPlaceCounter}')`);
-//     }
-//   }
 
-//   counter--;
-// }
+
+document.getElementById('amount').addEventListener('input', function() {
+  var amount = parseFloat(this.value);
+  var hiddenDiv = document.querySelector('.hidden_div');
+  if (!isNaN(amount) && amount > 0) {
+      hiddenDiv.style.display = 'block';
+  } else {
+      hiddenDiv.style.display = 'none';
+      document.getElementById('combobox_value').value = '';
+      document.getElementById('calculation').value = '';
+  }
+});
+
+
+
+
+
+
+
+
+
+
 
 
 
