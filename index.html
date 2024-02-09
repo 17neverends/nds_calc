@@ -7,32 +7,32 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body> 
-    <form>
+     <form>
         <h1>Общая информация</h1>
 
 
         <label>Доп. сбор за доставку с получателя, в т.ч. НДС</label>
         <input type="text" id="amount" name="amount" placeholder="Введите сумму">
 
+        <div class="hidden_div">
+            <label>Ставка/Сумма НДС за доп. сбор с получателя (включается когда введен доп. сбор)</label>
 
-        <label>Ставка/Сумма НДС за доп. сбор с получателя (включается когда введен доп. сбор)</label>
+            <div class="nds-flex">
+                <div class="droprow">
+                    <input type="text" id="combobox_value" onclick="showDropdown('ndsList')" placeholder="НДС" readonly>
+                    <ul id="ndsList" class="dropdown-list">
+                        <li value="without" data-id="without" class="option" onclick="selectRole('without', 'Нет НДС','combobox_value', 'ndsList', 'amount', 'calculation')">Нет НДС</li>
+                        <li value="zero" data-id="zero" class="option" onclick="selectRole('zero', '0%','combobox_value', 'ndsList', 'amount', 'calculation')">0%</li>
+                        <li value="ten" data-id="ten" class="option" onclick="selectRole('ten', '10%','combobox_value', 'ndsList', 'amount', 'calculation')">10%</li>
+                        <li value="twenty" data-id="twenty" class="option" onclick="selectRole('twenty', '20%','combobox_value', 'ndsList', 'amount', 'calculation')">20%</li>
+                    </ul>
+                </div>
 
-        <div class="nds-flex">
-            <div class="droprow">
-                <input type="text" id="combobox_value" onclick="showDropdown('ndsList')" placeholder="НДС" readonly>
-                <ul id="ndsList" class="dropdown-list">
-                    <li value="without" data-id="without" class="option" onclick="selectRole('without', 'Нет НДС','combobox_value', 'ndsList')">Нет НДС</li>
-                    <li value="zero" data-id="zero" class="option" onclick="selectRole('zero', '0%','combobox_value', 'ndsList')">0%</li>
-                    <li value="ten" data-id="ten" class="option" onclick="selectRole('ten', '10%','combobox_value', 'ndsList')">10%</li>
-                    <li value="twenty" data-id="twenty" class="option" onclick="selectRole('twenty', '20%','combobox_value', 'ndsList')">20%</li>
-                </ul>
+                <p class="separator">/</p>
+
+                <input type="text" id="calculation" name="calculation" placeholder="Подсчет" readonly>
             </div>
-
-            <p class="separator">/</p>
-
-            <input type="text" id="calculation" name="calculation" placeholder="Подсчет">
         </div>
-
         <div class="all_places">
 
         </div>
