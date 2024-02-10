@@ -19,7 +19,6 @@ function selectRole(value, text, inputId, listId, getID, whereID) {
   var input = document.getElementById(inputId);
   var list = document.getElementById(listId);
   input.value = text;
-  console.log(text);
   if (value === 'without' || value === 'zero') {
       document.getElementById(whereID).value = '0';
   } else {
@@ -176,41 +175,47 @@ function removePlace(placeId) {
 
   placeToRemove.remove();
 
+  const counter = placeId.match(/\d+$/)[0];
+  delete HashMap[parentIdNum + '_' + counter];
+
   const places = document.querySelectorAll(`#${parentId} .places`);
   places.forEach((place, index) => {
-    const counter = index + 1;
-    place.id = `place${parentIdNum}_${counter}`;
-    place.querySelector('p').textContent = `Товар ${counter}`;
+    const newCounter = index + 1;
+    const newPlaceId = `place${parentIdNum}_${newCounter}`;
+    place.id = newPlaceId;
+    place.querySelector('p').textContent = `Товар ${newCounter}`;
     place.querySelectorAll('input').forEach(input => {
       const inputIdArray = input.id.split('_');
-      inputIdArray[inputIdArray.length - 1] = counter;
+      inputIdArray[inputIdArray.length - 1] = newCounter;
       input.id = inputIdArray.join('_');
     });
 
     const leftInputPlace = place.querySelector('.left_input_place');
     if (leftInputPlace) {
-      leftInputPlace.id = `left_input_place${parentIdNum}_${counter}`;
+      leftInputPlace.id = `left_input_place${parentIdNum}_${newCounter}`;
       const inputInsideLeftInputPlace = leftInputPlace.querySelector('input');
       if (inputInsideLeftInputPlace) {
-        inputInsideLeftInputPlace.id = `place_combobox_value${parentIdNum}_${counter}`;
-        inputInsideLeftInputPlace.setAttribute('onclick', `showDropdown('place_ndsList${parentIdNum}_${counter}')`);
+        inputInsideLeftInputPlace.id = `place_combobox_value${parentIdNum}_${newCounter}`;
+        inputInsideLeftInputPlace.setAttribute('onclick', `showDropdown('place_ndsList${parentIdNum}_${newCounter}')`);
       }
       const dropdownList = leftInputPlace.querySelector('.dropdown-list');
       if (dropdownList) {
-        dropdownList.id = `place_ndsList${parentIdNum}_${counter}`;
+        dropdownList.id = `place_ndsList${parentIdNum}_${newCounter}`;
         dropdownList.querySelectorAll('li').forEach((li, idx) => {
-          const idNum = parentIdNum + '_' + counter;
+          const idNum = parentIdNum + '_' + newCounter;
           li.setAttribute('onclick', `selectRole('${li.dataset.id}', '${li.textContent}', 'place_combobox_value${idNum}', 'place_ndsList${idNum}', 'cost${idNum}', 'nds_cost${idNum}')`);
         });
       }
     }
     const button = place.querySelector('button');
     if (button) {
-      const currentPlaceId = place.id;
-      button.setAttribute('onclick', `removePlace('${currentPlaceId}')`);
+      button.setAttribute('onclick', `removePlace('${newPlaceId}')`);
     }
+
+    HashMap[parentIdNum] = newCounter;
   });
 }
+
 
 
 
@@ -232,6 +237,8 @@ document.getElementById('amount').addEventListener('input', function() {
       document.getElementById('calculation').value = '';
   }
 });
+
+
 
 
 
