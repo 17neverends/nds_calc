@@ -14,16 +14,18 @@ document.addEventListener("DOMContentLoaded", function() {
   var ndsInput = document.getElementById("combobox_value");
 
   amountInput.addEventListener("input", function() {
-    if (ndsInput.value !== '') {
+    if (amountInput.value !== '' && ndsInput.value !== '') {
       calculateTotal();
+    } else {
+      document.getElementById("calculation").value = '';
     }
   });
   
   ndsInput.addEventListener("change", function() {
-    if (ndsInput.value === 'Нет НДС' || ndsInput.value === '0%') {
-      document.getElementById("calculation").value = 'Выберите НДС';
-    } else {
+    if (amountInput.value !== '' && ndsInput.value !== '') {
       calculateTotal();
+    } else {
+      document.getElementById("calculation").value = '';
     }
   });
 
@@ -32,23 +34,26 @@ document.addEventListener("DOMContentLoaded", function() {
     var ndsRateText = document.getElementById("combobox_value").value;
     var calculationInput = document.getElementById("calculation");
     var ndsRate;
-    if (ndsRateText === '10%') {
-        ndsRate = 10;
-    } else if (ndsRateText === '20%') {
-        ndsRate = 20;
+    if (ndsRateText === '10%' || ndsRateText === '20%') {
+      ndsRate = parseInt(ndsRateText);
+    } else {
+      ndsRate = 0;
     }
 
     var prod;
     if (ndsRate === 10) {
-        prod = 9.090909;
+      prod = 9.090909;
     } else if (ndsRate === 20) {
-        prod = 16.666667;
+      prod = 16.666667;
+    } else {
+      prod = 0;
     }
 
     var total = amount * prod / 100;
     calculationInput.value = total.toFixed(2);
   }
 });
+
 
 
 
@@ -74,7 +79,9 @@ function selectRole(value, text, inputId, listId, getID, whereID) {
 function calculateTotal(amount, ndsRate, whereID) {
   var total;
   
-  if (ndsRate === 0 || ndsRate === 'Нет НДС' || ndsRate === 'zero') {
+  if (!amount || isNaN(amount)) {
+    total = ''; 
+  } else if (ndsRate === 0 || ndsRate === 'Нет НДС' || ndsRate === 'zero') {
     total = 0;
   } else {
     var prod;
@@ -87,7 +94,7 @@ function calculateTotal(amount, ndsRate, whereID) {
     total = amount * prod / 100;
   }
 
-  document.getElementById(whereID).value = total.toFixed(2);
+  document.getElementById(whereID).value = total === '' ? '' : total.toFixed(2);
 }
 
 
@@ -123,7 +130,7 @@ function addInputListener(amountInput, ndsInput, i, current) {
           }
 
           calculateTotal(amount, ndsRate, `nds_cost${i+1}_${current}`);
-      }
+      } 
   });
 }
 function showPlacesOnload() {
@@ -139,7 +146,7 @@ function showPlacesOnload() {
           <div class="places" id="place${i+1}_${current}">
               <p class="items">Товар 1</p>
               <label>Код артикула</label>
-              <input class="code" type="number" id="code${i+1}_${current}" name="code" placeholder="Введите артикул">
+              <input class="code" type="text" id="code${i+1}_${current}" name="code" placeholder="Введите артикул">
               <label>Наименование товара</label>
               <input class="title" type="text" id="title${i+1}_${current}" name="title" value="ТНП" placeholder="Введите товар">
               <label>Стоимость ед. товара в ₽</label>
@@ -149,11 +156,11 @@ function showPlacesOnload() {
               <div class="weight_input">
                   <div class="left_input" id="left_input${i+1}_${current}">
                       <label>Вес ед. товара (кг)</label>
-                      <input class="weight" type="number" id="weight${i+1}_${current}" name="weight" placeholder="Введите кг.">
+                      <input class="weight" type="number" id="weight${i+1}_${current}"  name="weight" placeholder="Введите кг.">
                   </div>
                   <div>
                       <label>Кол-во ед.</label>
-                      <input class="count" type="number" id="count${i+1}_${current}" name="count" placeholder="Введите шт.">
+                      <input class="count" type="number" id="count${i+1}_${current}" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="count" placeholder="Введите шт.">
                   </div>  
               </div>
 
@@ -199,7 +206,7 @@ function addNumber(id) {
   newPlace.innerHTML = `
       <p class="items">Товар ${counter}</p>
       <label>Код артикула</label>
-      <input class="code" type="number" id="code${id}_${counter}" name="code" placeholder="Введите артикул">
+      <input class="code" type="text" id="code${id}_${counter}" name="code" placeholder="Введите артикул">
       <label>Наименование товара</label>
       <input class="title" type="text" id="title${id}_${counter}" name="title" value="ТНП" placeholder="Введите товар">
       <label>Стоимость ед. товара в ₽</label>
@@ -212,7 +219,7 @@ function addNumber(id) {
           </div>
           <div>
               <label>Кол-во ед.</label>
-              <input class="count" type="number" id="count${id}_${counter}" name="count" placeholder="Введите шт.">
+              <input class="count" type="number" id="count${id}_${counter}" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="count" placeholder="Введите шт.">
           </div>  
       </div>
 
