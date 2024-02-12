@@ -1,5 +1,6 @@
 const status_text = document.getElementById('status');
 
+
 function showDropdown(inputID) {
   var dropdown = document.getElementById(inputID);
   if (dropdown) {
@@ -7,18 +8,59 @@ function showDropdown(inputID) {
   }
 }
 
-function hideDropdown(inputID) {
-  var dropdown = document.getElementById(inputID);
-  if (dropdown) {
-    dropdown.style.display = "none";
+
+document.addEventListener("DOMContentLoaded", function() {
+  var amountInput = document.getElementById("amount");
+  var ndsInput = document.getElementById("combobox_value");
+
+  amountInput.addEventListener("input", function() {
+    if (ndsInput.value !== '') {
+      calculateTotal();
+    }
+  });
+  
+  ndsInput.addEventListener("change", function() {
+    if (ndsInput.value === 'Нет НДС' || ndsInput.value === '0%') {
+      document.getElementById("calculation").value = 'Выберите НДС';
+    } else {
+      calculateTotal();
+    }
+  });
+
+  function calculateTotal() {
+    var amount = parseFloat(document.getElementById("amount").value);
+    var ndsRateText = document.getElementById("combobox_value").value;
+    var calculationInput = document.getElementById("calculation");
+    var ndsRate;
+    if (ndsRateText === '10%') {
+        ndsRate = 10;
+    } else if (ndsRateText === '20%') {
+        ndsRate = 20;
+    }
+
+    var prod;
+    if (ndsRate === 10) {
+        prod = 9.090909;
+    } else if (ndsRate === 20) {
+        prod = 16.666667;
+    }
+
+    var total = amount * prod / 100;
+    calculationInput.value = total.toFixed(2);
   }
-}
+});
+
 
 
 function selectRole(value, text, inputId, listId, getID, whereID) {
   var input = document.getElementById(inputId);
   var list = document.getElementById(listId);
   input.value = text;
+  if (value === '') {
+    return;
+    
+  }
+
   if (value === 'without' || value === 'zero') {
       document.getElementById(whereID).value = '0';
   } else {
@@ -30,18 +72,24 @@ function selectRole(value, text, inputId, listId, getID, whereID) {
 }
 
 function calculateTotal(amount, ndsRate, whereID) {
-  let prod;
-  var calculationInput = document.getElementById(whereID);
+  var total;
+  
+  if (ndsRate === 0 || ndsRate === 'Нет НДС' || ndsRate === 'zero') {
+    total = 0;
+  } else {
+    var prod;
+    if (ndsRate == '10') {
+      prod = 9.090909;
+    } else if (ndsRate == '20') {
+      prod = 16.666667;
+    }
+    
+    total = amount * prod / 100;
+  }
 
-  if (ndsRate == '10'){
-    prod = 9.090909
-  } else if (ndsRate == '20'){
-    prod = 16.666667
-  } 
-
-  var total = amount * prod / 100;
-  calculationInput.value = total.toFixed(2);
+  document.getElementById(whereID).value = total.toFixed(2);
 }
+
 
 
 
@@ -53,7 +101,31 @@ for (let i = 1; i <= storageValue;i++){
   HashMap[i] = 1;
 }
 
+function addInputListener(amountInput, ndsInput, i, current) {
+  amountInput.addEventListener('input', function() {
+      var amount = parseFloat(amountInput.value);
+      var ndsRateText = ndsInput.value;
+      var ndsRate;
+      if (ndsRateText.trim() !== '') {
+          switch (ndsRateText) {
+              case 'Нет НДС':
+              case 'zero':
+                  ndsRate = 0;
+                  break;
+              case '10%':
+                  ndsRate = 10;
+                  break;
+              case '20%':
+                  ndsRate = 20;
+                  break;
+              default:
+                  ndsRate = 0;
+          }
 
+          calculateTotal(amount, ndsRate, `nds_cost${i+1}_${current}`);
+      }
+  });
+}
 function showPlacesOnload() {
   var keys = Object.keys(HashMap);
   
@@ -108,8 +180,12 @@ function showPlacesOnload() {
       </div>
       <button class="created" type="button" id="add" onclick="addNumber(${i+1})" >+ Добавить товар</button>`
     document.querySelector('.all_places').appendChild(newPlace);
-    
-  }
+    var amountInput = document.getElementById(`cost${i+1}_${current}`);
+    var ndsInput = document.getElementById(`place_combobox_value${i+1}_${current}`);
+
+    addInputListener(amountInput, ndsInput, i, current);
+
+      }
 }
 
 showPlacesOnload();
@@ -162,7 +238,40 @@ function addNumber(id) {
       <button class="created" id="for_delete" type="button" onclick="removePlace('${newPlace.id}')">Удалить</button>
   `;
   document.getElementById(`places-container${id}`).appendChild(newPlace);
+  var amountInput = document.getElementById(`cost${id}_${counter}`);
+  var ndsInput = document.getElementById(`place_combobox_value${id}_${counter}`);
+  
+  amountInput.addEventListener('input', function() {
+    var amount = parseFloat(amountInput.value);
+    var ndsRateText = ndsInput.value.trim();
+    
+    if (amount && ndsRateText !== '') {
+        var ndsRate;
+        
+        switch (ndsRateText) {
+            case 'zero':
+                ndsRate = 0;
+                break;
+            case '10%':
+                ndsRate = 10;
+                break;
+            case '20%':
+                ndsRate = 20;
+                break;
+            default:
+                ndsRate = 0;
+        }
+
+        calculateTotal(amount, ndsRate, `nds_cost${id}_${counter}`);
+    } else {
+        document.getElementById(`nds_cost${id}_${counter}`).value = '';
+    }
+});
+
+
+
   HashMap[id]++;
+  
 }
 
 
