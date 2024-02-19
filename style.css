@@ -3,19 +3,19 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-width: 100%;
     -ms-overflow-style: none;
-    scrollbar-width: none;
-    scrollbar-width: none;
-    scrollbar-color: transparent transparent;
-    overflow-y: scroll; 
+     scrollbar-width: none; 
+     scrollbar-color: transparent transparent;
+     overflow-y: scroll;
     display: flex;
     align-items: center;
     justify-content: center;
+    
 }
+::-webkit-scrollbar {
+    width: 0;
+  }
 
 h1 {
     font-size: 20px;
@@ -61,7 +61,7 @@ form {
     background-color: #fff;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-    max-width: 400px;
+    max-width: 1000px;
     width: 100%;
     margin: auto;
     height: 100%;
@@ -247,11 +247,39 @@ li:hover {
 
 .weight_input {
     display: flex;
+    justify-content: space-between; 
 }
+
+.weight_input .left_input,
+.weight_input div {
+    flex-grow: 1;
+}
+
+.weight_input .left_input {
+    margin-right: 10px;
+}
+
+
 .left_input_place{
     width: 45%;
     margin-right: 20px;
 }
+
+
+.nds-flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.nds-flex .left_input_place,
+.nds-flex div {
+    flex-grow: 1; 
+}
+
+.nds-flex .left_input_place {
+    margin-right: 10px; 
+}
+
 
 
 .left_input{
